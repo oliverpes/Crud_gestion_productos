@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Productos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Gestión de Productos</h1>
+
+  <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#productoModal" onclick="limpiarFormulario()">
+    Nuevo Producto
+  </button>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Producto</th>
+          <th>Marca</th>
+          <th>Descripción</th>
+          <th>Precio Costo</th>
+          <th>Precio Venta</th>
+          <th>Existencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% productos.forEach((prod) => { %>
+          <tr onclick="editarProducto(<%= JSON.stringify(prod) %>)">
+            <td><%= prod.idProducto %></td>
+            <td><%= prod.producto %></td>
+            <td><%= prod.marca || '-' %></td>
+            <td><%= prod.descripcion %></td>
+            <td><%= prod.precio_costo %></td>
+            <td><%= prod.precio_venta %></td>
+            <td><%= prod.existencia %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <div class="bg-dark text-white text-center py-2">
+      <small>Desarrollo web: Oliver Alexander Pérez Silvestre</small>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productoModalLabel">Datos del Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <form action="/crud_p" method="post">
+        <div class="modal-body">
+          <input type="text" class="form-control mb-2 bg-secondary text-white" id="txt_id" name="txt_id" value="0" readonly>
+          <input type="text" class="form-control mb-2" id="txt_producto" name="txt_producto" placeholder="Nombre del Producto" required>
+          
+          <!-- Select dinámico para Marca -->
+          <select class="form-select mb-2" id="txt_idMarca" name="txt_idMarca" required>
+            <option value="">Seleccione Marca</option>
+            <% marcas.forEach((m) => { %>
+              <option value="<%= m.idMarca %>"><%= m.marca %></option>
+            <% }) %>
+          </select>
+
+          <input type="text" class="form-control mb-2" id="txt_descripcion" name="txt_descripcion" placeholder="Descripción">
+          <input type="number" step="0.01" class="form-control mb-2" id="txt_precio_costo" name="txt_precio_costo" placeholder="Precio Costo" required>
+          <input type="number" step="0.01" class="form-control mb-2" id="txt_precio_venta" name="txt_precio_venta" placeholder="Precio Venta" required>
+          <input type="number" class="form-control mb-2" id="txt_existencia" name="txt_existencia" placeholder="Existencia" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" name="btn_crear" value="crear">Agregar</button>
+          <button type="submit" class="btn btn-success" name="btn_actualizar" value="actualizar">Modificar</button>
+          <button type="submit" class="btn btn-danger" name="btn_borrar" value="borrar" onclick="return confirmarEliminar()">Eliminar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function limpiarFormulario() {
+    document.getElementById("txt_id").value = "0";
+    document.getElementById("txt_producto").value = "";
+    document.getElementById("txt_idMarca").value = "";
+    document.getElementById("txt_descripcion").value = "";
+    document.getElementById("txt_precio_costo").value = "";
+    document.getElementById("txt_precio_venta").value = "";
+    document.getElementById("txt_existencia").value = "";
+  }
+
+  function editarProducto(prod) {
+    document.getElementById("txt_id").value = prod.idProducto;
+    document.getElementById("txt_producto").value = prod.producto;
+    document.getElementById("txt_idMarca").value = prod.idMarca;
+    document.getElementById("txt_descripcion").value = prod.descripcion;
+    document.getElementById("txt_precio_costo").value = prod.precio_costo;
+    document.getElementById("txt_precio_venta").value = prod.precio_venta;
+    document.getElementById("txt_existencia").value = prod.existencia;
+
+    const modal = new bootstrap.Modal(document.getElementById("productoModal"));
+    modal.show();
+  }
+
+  function confirmarEliminar() {
+    return confirm("¿Seguro que deseas eliminar este producto?");
+  }
+</script>
+</body>
+</html>
